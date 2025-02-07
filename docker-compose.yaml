@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  database:
+    image: "postgres:16"
+    container_name: spa_database
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - "pg_data:/var/lib/postgresql/data"
+    healthcheck: # Check if the database is ready
+      test: ["CMD", "pg_isready", "-U", "${DATABASE_USER}"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: spa_app
+    container_name: spa_api
+    ports:
+      - "9000:9000"
+    env_file:
+      - ".env"
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ./:/app/
+
+volumes:
+  pg_data:
