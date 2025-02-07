@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Post by {{ post.author.username }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h3 class="card-title">{{ post.author.username }}</h3>
+        <p class="card-text">{{ post.text }}</p>
+    </div>
+    <div class="card-footer text-muted">
+        {{ post.created_at|date:"d M Y" }}
+    </div>
+</div>
+
+<!-- Форма комментариев -->
+{% if user.is_authenticated %}
+<div class="mt-4">
+    <h4>Leave a comment</h4>
+    <form method="post" action="{% url 'comment_create' post.pk %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="commentText" class="form-label">Comment</label>
+            <textarea class="form-control" id="commentText" name="text" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% else %}
+<p class="text-muted">You need to <a href="{% url 'login' %}">log in</a> to leave a comment.</p>
+{% endif %}
+
+<!-- Комментарии -->
+<h4 class="mt-4">Comments</h4>
+{% for comment in post.comments.all %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h6 class="card-subtitle mb-2 text-muted">{{ comment.author.username }}</h6>
+        <p class="card-text">{{ comment.text }}</p>
+        <small class="text-muted">{{ comment.created_at|date:"d M Y" }}</small>
+    </div>
+</div>
+{% empty %}
+<p>No comments yet.</p>
+{% endfor %}
+{% endblock %}
