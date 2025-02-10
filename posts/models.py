@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-from django.utils.html import strip_tags
 import bleach
 
 ALLOWED_TAGS = ['b', 'i', 'u', 'a']
@@ -19,7 +18,7 @@ class Post(models.Model):
         return f'{self.author.username} - {self.created_at}'
 
     def save(self, *args, **kwargs):
-        """Очищаем текст от запрещённых HTML тегов"""
+        """Clean the text from dangerous tags and attributes."""
         self.text = bleach.clean(self.text, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
         super().save(*args, **kwargs)
 

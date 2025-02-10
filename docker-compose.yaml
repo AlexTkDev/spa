@@ -12,12 +12,6 @@ services:
       POSTGRES_DB: ${DATABASE_NAME}
     volumes:
       - "pg_data:/var/lib/postgresql/data"
-    healthcheck: # Check if the database is ready
-      test: ["CMD", "pg_isready", "-U", "${DATABASE_USER}"]
-      interval: 10s
-      retries: 5
-      start_period: 10s
-      timeout: 5s
 
   api:
     build:
@@ -30,8 +24,7 @@ services:
     env_file:
       - ".env"
     depends_on:
-      database:
-        condition: service_healthy
+      - database
     volumes:
       - ./:/app/
 
