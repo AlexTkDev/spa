@@ -1,7 +1,8 @@
-{% extends "base.html" %}
-{% block title %}All Posts{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
+<h1>Posts</h1>
+
 <div class="row">
     {% for post in posts %}
     <div class="col-md-6 mb-4">
@@ -20,4 +21,24 @@
     <p>No posts available.</p>
     {% endfor %}
 </div>
+
+<!-- Пагинация -->
+<nav>
+    <ul class="pagination">
+        {% if posts.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ posts.previous_page_number }}&order_by={{ order_by }}">Previous</a>
+        </li>
+        {% endif %}
+        <li class="page-item active">
+            <span class="page-link">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>
+        </li>
+        {% if posts.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ posts.next_page_number }}&order_by={{ order_by }}">Next</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+
 {% endblock %}
