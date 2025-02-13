@@ -26,12 +26,21 @@
    окружения:
 
    ```env
-   DATABASE_USER=admin
-   DATABASE_PASSWORD=your_password
-   DATABASE_NAME=spa
+   SECRET_KEY=""
+   
+    # Database
+   DATABASE_NAME=***
+   DATABASE_USER=***
+   DATABASE_PASSWORD=***
+   DATABASE_PORT=5432
    ```
 
    Эти переменные будут использованы для конфигурации подключения к базе данных.
+
+   Генерация секретного ключа через командную строку (Linux/macOS), после чего вставьте его в файл `.env`:
+   ```bash
+    python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+    ```
 
 3. **Сборка и запуск контейнеров**
 
