@@ -39,7 +39,7 @@
    сборки и запуска контейнеров:
 
    ```bash
-   docker-compose up --build
+   docker-compose up -d
    ```
 
 4. **Проверка работы проекта**
