@@ -3,7 +3,7 @@ from django.db import models
 from django.core.validators import RegexValidator
 
 class User(AbstractUser):
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, blank=False, null=False)
     homepage = models.URLField(blank=True, null=True)
 
     username_validator = RegexValidator(

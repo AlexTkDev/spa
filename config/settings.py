@@ -86,7 +86,7 @@ DATABASES = {
         "NAME": os.getenv("DATABASE_NAME"),
         "USER": os.getenv("DATABASE_USER"),
         "PASSWORD": os.getenv("DATABASE_PASSWORD"),
-        "HOST": "spa_database",
+        "HOST": "database",
         "PORT": os.getenv("DATABASE_PORT"),
     }
 }
