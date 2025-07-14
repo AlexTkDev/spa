@@ -6,33 +6,49 @@ ALLOWED_TAGS = ['b', 'i', 'u', 'a']
 ALLOWED_ATTRIBUTES = {'a': ['href', 'title']}
 
 class Post(models.Model):
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    """Модель поста пользователя."""
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        help_text="Автор поста."
+    )
+    text = models.TextField(help_text="Текст поста. Поддерживаются теги: b, i, u, a.")
+    created_at = models.DateTimeField(auto_now_add=True, help_text="Дата создания.")
+    updated_at = models.DateTimeField(auto_now=True, help_text="Дата последнего обновления.")
 
     class Meta:
         ordering = ['-created_at']
 
     def __str__(self):
-        return f'{self.author.username} - {self.created_at}'
+        # self.author всегда экземпляр пользователя
+        return f"{self.author} - {self.created_at:%Y-%m-%d %H:%M}"
 
     def save(self, *args, **kwargs):
-        """Clean the text from dangerous tags and attributes."""
-        self.text = bleach.clean(self.text, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
+        """Очищает текст от опасных тегов и атрибутов перед сохранением."""
+        self.text = bleach.clean(str(self.text), tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
         super().save(*args, **kwargs)
 
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True,
-                               related_name="replies")
+    """Модель комментария к посту, поддерживает древовидную структуру."""
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="comments",
+        help_text="Пост, к которому относится комментарий."
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        help_text="Автор комментария."
+    )
+    text = models.TextField(help_text="Текст комментария.")
+    created_at = models.DateTimeField(auto_now_add=True, help_text="Дата создания.")
+    parent = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, blank=True,
+        related_name="replies", help_text="Родительский комментарий (для вложенности)."
+    )
 
     class Meta:
         ordering = ['created_at']
 
     def __str__(self):
-        return f"Comment by {self.author.username} on {self.post}"
+        # self.author и self.post всегда экземпляры моделей
+        return f"Comment by {self.author} on post {self.post} at {self.created_at:%Y-%m-%d %H:%M}"
